@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Ejecutivo de Ventas - Mayo 2026</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #eef2f5;
+      --ink: #1f2933;
+      --muted: #627083;
+      --line: #d9e1e8;
+      --brand: #1f6f78;
+      --brand-2: #2f80ed;
+      --good: #15803d;
+      --warn: #b7791f;
+      --bad: #b91c1c;
+      --soft-good: #e8f5ee;
+      --soft-warn: #fff7df;
+      --soft-bad: #fdecec;
+      --shadow: 0 10px 25px rgba(31, 41, 51, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; }
+    .shell { min-height: 100vh; }
+    .topbar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 22px 24px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.1;
+      font-weight: 760;
+    }
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .period-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      border-radius: 8px;
+      color: #314152;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    main {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 18px 24px 40px;
+    }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(130px, 1fr));
+      gap: 10px;
+      align-items: end;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .field input, .field select {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 9px;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .btn {
+      min-height: 38px;
+      border: 1px solid var(--brand);
+      border-radius: 7px;
+      background: var(--brand);
+      color: #fff;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn.secondary {
+      background: #fff;
+      color: var(--brand);
+    }
+    .quality-strip {
+      margin: 14px 0 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .notice {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #3a4654;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .notice.good { background: var(--soft-good); border-color: #b8dec8; }
+    .notice.warn { background: var(--soft-warn); border-color: #efd48a; }
+    .notice.bad { background: var(--soft-bad); border-color: #efb8b8; }
+    .kpis {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 128px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: var(--brand);
+    }
+    .kpi.good::before { background: var(--good); }
+    .kpi.warn::before { background: var(--warn); }
+    .kpi.bad::before { background: var(--bad); }
+    .label-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kpi .label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+    .value {
+      margin-top: 12px;
+      font-size: clamp(22px, 2.8vw, 32px);
+      font-weight: 780;
+      line-height: 1.05;
+    }
+    .kpi .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.3;
+    }
+    .info {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--brand);
+      display: inline-grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: help;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .info:hover::after, .info:focus::after {
+      content: attr(data-tip);
+      position: absolute;
+      z-index: 20;
+      right: 0;
+      top: 28px;
+      width: min(320px, 80vw);
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #1f2933;
+      color: #fff;
+      box-shadow: var(--shadow);
+      font-weight: 500;
+      line-height: 1.35;
+      text-transform: none;
+      font-size: 12px;
+    }
+    .grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 14px;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+    .panel-header {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+    .panel h2 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+    .panel-note {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .chart {
+      width: 100%;
+      min-height: 310px;
+    }
+    .compact-chart { min-height: 255px; }
+    svg text { font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f3f6f8;
+      color: #435264;
+      font-size: 12px;
+      text-transform: uppercase;
+      z-index: 1;
+    }
+    td.amount, th.amount { text-align: right; }
+    .rank-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 4px;
+    }
+    .rank-item {
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) minmax(90px, auto);
+      gap: 10px;
+      align-items: center;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .bar-track {
+      grid-column: 1 / -1;
+      height: 8px;
+      border-radius: 999px;
+      background: #e7edf2;
+      overflow: hidden;
+    }
+    .bar-fill { height: 100%; background: var(--brand); border-radius: 999px; }
+    .bar-fill.good { background: var(--good); }
+    .bar-fill.warn { background: var(--warn); }
+    .bar-fill.bad { background: var(--bad); }
+    .status-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 7px;
+      vertical-align: middle;
+      background: var(--brand);
+    }
+    .status-dot.good { background: var(--good); }
+    .status-dot.warn { background: var(--warn); }
+    .status-dot.bad { background: var(--bad); }
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .insight {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 96px;
+    }
+    .insight strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+    .insight p {
+      margin: 0;
+      color: #405064;
+      line-height: 1.35;
+      font-size: 13px;
+    }
+    .commission-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 8px 0 14px;
+    }
+    .commission-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 94px;
+    }
+    .commission-card .small {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+    .commission-card .big {
+      margin-top: 9px;
+      font-size: clamp(20px, 2.4vw, 28px);
+      line-height: 1.05;
+      font-weight: 780;
+    }
+    .commission-card .note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .commission-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .progress-list {
+      display: grid;
+      gap: 10px;
+    }
+    .progress-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px;
+      background: #fff;
+    }
+    .progress-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 750;
+    }
+    .progress-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .progress-track {
+      height: 10px;
+      margin-top: 9px;
+      border-radius: 999px;
+      background: #e7edf2;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--brand);
+    }
+    .progress-fill.good { background: var(--good); }
+    .progress-fill.warn { background: var(--warn); }
+    .progress-fill.bad { background: var(--bad); }
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .hidden { display: none; }
+    @media (max-width: 1180px) {
+      .filters { grid-template-columns: repeat(4, minmax(140px, 1fr)); }
+      .kpis { grid-template-columns: repeat(3, minmax(160px, 1fr)); }
+      .grid { grid-template-columns: 1fr; }
+      .quality-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .commission-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .commission-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .topbar-inner { grid-template-columns: 1fr; padding: 18px 14px; }
+      main { padding: 14px; }
+      .filters, .kpis, .quality-strip, .insights, .commission-summary { grid-template-columns: 1fr; }
+      .actions { justify-content: stretch; }
+      .btn { flex: 1; }
+      .period-pill { white-space: normal; }
+      th, td { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div>
+        <h1>Dashboard Ejecutivo de Ventas</h1>
+        <p class="subtitle">Base mensual de operaciones de credito. Hoja usada: <strong>DATOS</strong>. Generado: 2026-06-05 17:05.</p>
+      </div>
+      <div class="period-pill" id="periodPill">Periodo detectado</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="filters" aria-label="Filtros">
+      <div class="field">
+        <label for="dateFrom">Desde</label>
+        <input id="dateFrom" type="date">
+      </div>
+      <div class="field">
+        <label for="dateTo">Hasta</label>
+        <input id="dateTo" type="date">
+      </div>
+      <div class="field">
+        <label for="sellerFilter">Vendedor</label>
+        <select id="sellerFilter"></select>
+      </div>
+      <div class="field">
+        <label for="lineFilter">Linea</label>
+        <select id="lineFilter"></select>
+      </div>
+      <div class="field">
+        <label for="providerFilter">Proveedor</label>
+        <select id="providerFilter"></select>
+      </div>
+      <div class="field">
+        <label for="groupFilter">Grupo</label>
+        <select id="groupFilter"></select>
+      </div>
+      <div class="field">
+        <label for="localityFilter">Localidad</label>
+        <select id="localityFilter"></select>
+      </div>
+      <div class="actions">
+        <button class="btn secondary" id="clearFilters" type="button">Limpiar</button>
+      </div>
+    </section>
+
+    <section class="quality-strip" id="qualityStrip"></section>
+    <section class="kpis" id="kpiGrid"></section>
+
+    <section class="panel" style="margin-top:16px;">
+      <div class="panel-header">
+        <div>
+          <h2>Comisiones Comerciales</h2>
+          <p class="panel-note">Calculo automatico sobre vendedores comisionables, excluyendo operaciones de Cooperativa La Plata.</p>
+        </div>
+        <span class="info" tabindex="0" data-tip="Solo Alex Luna, Belén Toledo, Darío Díaz y Valentina Chanquia generan comision. Las ventas de Cooperativa La Plata siguen en estadisticas, pero no cuentan como colocacion comisionable.">i</span>
+      </div>
+      <div class="commission-summary" id="commissionSummary"></div>
+      <div class="commission-layout">
+        <div>
+          <h2 style="font-size:15px; margin:0 0 9px;">Cumplimiento contra objetivo</h2>
+          <div class="progress-list" id="commissionProgress"></div>
+        </div>
+        <div>
+          <h2 style="font-size:15px; margin:0 0 9px;">Ranking comisionable</h2>
+          <div class="chart compact-chart" id="commissionableRanking"></div>
+        </div>
+      </div>
+      <div class="commission-layout">
+        <div>
+          <h2 style="font-size:15px; margin:0 0 9px;">Ranking de comisiones</h2>
+          <div class="chart compact-chart" id="commissionRanking"></div>
+        </div>
+        <div>
+          <h2 style="font-size:15px; margin:0 0 9px;">Detalle por vendedor</h2>
+          <div class="table-wrap" id="commissionTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Evolucion diaria de colocacion</h2>
+            <p class="panel-note">Monto y cantidad por fecha, con alerta por caidas respecto del dia activo anterior.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Muestra la colocacion por dia dentro del filtro. Si el monto cae fuerte contra el dia activo anterior, la marca pasa a amarillo o rojo.">i</span>
+        </div>
+        <div class="chart" id="dailyChart"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Ranking de vendedores</h2>
+            <p class="panel-note">Cumplimiento relativo por monto y volumen de operaciones.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Ordena vendedores por monto colocado. Verde indica rendimiento igual o superior al promedio del equipo; amarillo y rojo muestran brechas relativas.">i</span>
+        </div>
+        <div id="sellerRanking"></div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Ventas por linea de credito</h2>
+            <p class="panel-note">Detecta concentracion de cartera y productos dominantes.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Agrupa operaciones por linea. Una linea con participacion muy alta puede ser oportunidad comercial, pero tambien riesgo de concentracion.">i</span>
+        </div>
+        <div class="chart compact-chart" id="lineChart"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Proveedor financiero</h2>
+            <p class="panel-note">Participacion por banco/proveedor informado en la base.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Suma monto y operaciones por proveedor. Si el primer proveedor supera 50%, conviene revisar dependencia operativa.">i</span>
+        </div>
+        <div class="chart compact-chart" id="providerChart"></div>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Grupo de afinidad</h2>
+            <p class="panel-note">Segmentos con mayor peso comercial.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Permite ver donde se concentra la venta por tipo de socio o convenio. Si sube, ese segmento esta traccionando el mes.">i</span>
+        </div>
+        <div class="chart compact-chart" id="groupChart"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Localidad</h2>
+            <p class="panel-note">Tabla territorial. Provincia no esta disponible como campo separado.</p>
+          </div>
+          <span class="info" tabindex="0" data-tip="Agrupa por localidad informada. La provincia no existe como columna confiable; para mejorar el mapa territorial conviene agregar Provincia al reporte fuente.">i</span>
+        </div>
+        <div class="table-wrap" id="localityTable"></div>
+      </article>
+    </section>
+
+    <section class="panel" style="margin-top:16px;">
+      <div class="panel-header">
+        <div>
+          <h2>Insights automaticos</h2>
+          <p class="panel-note">Lectura ejecutiva basada en los filtros activos.</p>
+        </div>
+        <span class="info" tabindex="0" data-tip="Los insights se recalculan con cada filtro y combinan rankings, concentracion, dias de mayor venta y alertas de baja produccion.">i</span>
+      </div>
+      <div class="insights" id="insights"></div>
+    </section>
+
+    <section class="panel" style="margin-top:16px;">
+      <div class="panel-header">
+        <div>
+          <h2>Detalle de operaciones</h2>
+          <p class="panel-note">Tabla filtrable de registros normalizados.</p>
+        </div>
+        <span class="info" tabindex="0" data-tip="Cada fila representa una operacion. El monto total, ticket promedio y rankings se calculan sobre estas filas filtradas.">i</span>
+      </div>
+      <div class="table-wrap" id="detailTable"></div>
+      <p class="footer-note">Columnas no disponibles en el archivo: Estado de operacion y Provincia separada. Por eso no se calcula tasa de aprobacion ni mapa provincial real.</p>
+    </section>
+  </main>
+</div>
+
+<script>
+const DATA = [{"fecha": "2026-05-05", "vendedor": "Belén Toledo", "dni": "13778949", "nombre": "Medina Pedro Fermin", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Cordoba", "monto": 300000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Belén Toledo", "dni": "12778244", "nombre": "Ibarra Marcelo", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Santa Fe", "monto": 427246.0, "localidad": "Santa Fe", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Darío Díaz", "dni": "12075229", "nombre": "Ruiz Guido", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Santiago Del Estero", "monto": 1401713.0, "localidad": "Santiago Del Estero", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Darío Díaz", "dni": "12838086", "nombre": "Ramallo Daniel", "grupo": "CJPC", "linea": "Aginco", "proveedor": "Cordoba", "monto": 820000.0, "localidad": "Jesus Maria", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-08", "vendedor": "Darío Díaz", "dni": "6697180", "nombre": "Moreno Felix", "grupo": "CJPC", "linea": "Aginco", "proveedor": "Cordoba", "monto": 800000.0, "localidad": "Villa Dolores", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Darío Díaz", "dni": "40680953", "nombre": "Castillo Leila", "grupo": "Empleado Publico", "linea": "141", "proveedor": "Cordoba", "monto": 1800000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-12", "vendedor": "Belén Toledo", "dni": "28982081", "nombre": "Ramiro Sanchez", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Nacion", "monto": 712007.0, "localidad": "Rio Negro", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-13", "vendedor": "Belén Toledo", "dni": "39324258", "nombre": "Torres Brenda Del Carmen", "grupo": "Empleado Publico", "linea": "Celesol", "proveedor": "Cordoba", "monto": 2700000.0, "localidad": "Villa Dolores", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-14", "vendedor": "Darío Díaz", "dni": "36145974", "nombre": "Valdez Ramon Ezequiel", "grupo": "Empleado Publico", "linea": "129", "proveedor": "Cordoba", "monto": 500000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-14", "vendedor": "Darío Díaz", "dni": "14530876", "nombre": "Laborde Rosana Beatriz", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Nacion", "monto": 283395.0, "localidad": "Buenos Aires", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Belén Toledo", "dni": "23295752", "nombre": "Landriel Miguel Alejandro", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Nacion", "monto": 713135.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Belén Toledo", "dni": "29207206", "nombre": "Reynoso Maria Ester", "grupo": "Empleado Publico", "linea": "Celesol", "proveedor": "Cordoba", "monto": 3300000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-06", "vendedor": "Alex Luna", "dni": "27877438", "nombre": "Diaz Ricardo Daniel", "grupo": "Municipal", "linea": "1", "proveedor": "Cordoba", "monto": 100000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-06-11", "vendedor": "Alex Luna", "dni": "17113605", "nombre": "Ortega Hector Saturnino", "grupo": "Municipal", "linea": "1", "proveedor": "Cordoba", "monto": 200000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Alex Luna", "dni": "33603550", "nombre": "Pereyra Julio Emanuel", "grupo": "Empleado Publico", "linea": "142", "proveedor": "Cordoba", "monto": 2300000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-13", "vendedor": "Alex Luna", "dni": "37628966", "nombre": "Fernandez Aliendro Ronald Nicolar", "grupo": "Empleado Publico", "linea": "141", "proveedor": "Cordoba", "monto": 2600000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-13", "vendedor": "Alex Luna", "dni": "34774175", "nombre": "Maldonado Ricado Luis Mario", "grupo": "Empleado Publico", "linea": "141", "proveedor": "Cordoba", "monto": 2000000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-14", "vendedor": "Alex Luna", "dni": "35279480", "nombre": "Aguilera Matias Jose Oscar", "grupo": "Empleado Publico", "linea": "129", "proveedor": "Cordoba", "monto": 2300000.0, "localidad": "Villa De Soto", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Alex Luna", "dni": "29463661", "nombre": "Marquez Vanina Del Valle", "grupo": "Empleado Publico", "linea": "141", "proveedor": "Cordoba", "monto": 2300000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Alex Luna", "dni": "27052956", "nombre": "Gonzalez Carlos Andres", "grupo": "Empleado Publico", "linea": "130", "proveedor": "Cordoba", "monto": 700000.0, "localidad": "Santa Maria De Punilla", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-18", "vendedor": "Darío Díaz", "dni": "17528776", "nombre": "Medrano Jose Nicolas", "grupo": "Municipal", "linea": "4", "proveedor": "Cordoba", "monto": 750000.0, "localidad": "San Marcos Sierra", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-18", "vendedor": "Belén Toledo", "dni": "16048404", "nombre": "Rivero Irma Beatrizz", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Macro", "monto": 938078.0, "localidad": "Entre Rios", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-18", "vendedor": "Darío Díaz", "dni": "17541093", "nombre": "Benitez Norma", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Provincia Bs As", "monto": 300216.0, "localidad": "Buenos Aires", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-19", "vendedor": "Darío Díaz", "dni": "11771049", "nombre": "Galfrascoli Ramona", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Nacion", "monto": 738267.0, "localidad": "Chaco", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-19", "vendedor": "Belén Toledo", "dni": "20422737", "nombre": "Barroso Maria Eugenia", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Cordoba", "monto": 1835280.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-19", "vendedor": "Darío Díaz", "dni": "16700407", "nombre": "Avalos Norma Cristina", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Nacion", "monto": 908403.0, "localidad": "Chaco", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-19", "vendedor": "Belén Toledo", "dni": "42894464", "nombre": "Garay Manuel Esteban", "grupo": "Empleado Publico", "linea": "130", "proveedor": "Cordoba", "monto": 2000000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-21", "vendedor": "Belén Toledo", "dni": "29254814", "nombre": "Herrera Carolina", "grupo": "Drill", "linea": "4", "proveedor": "Santander", "monto": 500000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-22", "vendedor": "Darío Díaz", "dni": "35524587", "nombre": "Salinas Alejandro", "grupo": "Empleado Publico", "linea": "130", "proveedor": "Cordoba", "monto": 1900000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-22", "vendedor": "Alex Luna", "dni": "44244412", "nombre": "Cabrera Hugo Alberto", "grupo": "Empleado Publico", "linea": "129", "proveedor": "Cordoba", "monto": 1000000.0, "localidad": "Las Playas", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-23", "vendedor": "Darío Díaz", "dni": "27296335", "nombre": "Martinez Marisa", "grupo": "Empleado Publico", "linea": "129", "proveedor": "Cordoba", "monto": 800000.0, "localidad": "Villa Dolores", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-25", "vendedor": "Belén Toledo", "dni": "43674909", "nombre": "Villegas Yamila Noemi", "grupo": "Empleado Publico", "linea": "130", "proveedor": "Cordoba", "monto": 600000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-26", "vendedor": "Belén Toledo", "dni": "38110083", "nombre": "Castillo Micaela Anahi", "grupo": "Municipal", "linea": "4", "proveedor": "Cordoba", "monto": 500000.0, "localidad": "Villa De Soto", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-26", "vendedor": "Alex Luna", "dni": "35259892", "nombre": "Perea Leonardo Gaston", "grupo": "Empleado Publico", "linea": "Celesol", "proveedor": "Cordoba", "monto": 4850000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-27", "vendedor": "Darío Díaz", "dni": "44296747", "nombre": "Jose Ricardo Ruiz", "grupo": "Empleado Publico", "linea": "Celesol", "proveedor": "Cordoba", "monto": 1000000.0, "localidad": "El Brete", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-27", "vendedor": "Belén Toledo", "dni": "179224124", "nombre": "Morvillo Hugo Alberto", "grupo": "Jubilado", "linea": "Coop de la Plata", "proveedor": "Santander", "monto": 908642.0, "localidad": "San Juan", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-27", "vendedor": "Alex Luna", "dni": "94576915", "nombre": "Pintos Maria Virgilia", "grupo": "Jubilacion", "linea": "Coop de la Plata", "proveedor": "Formosa", "monto": 1122027.0, "localidad": "Formosa", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-27", "vendedor": "Alex Luna", "dni": "23537292", "nombre": "Moreno Analia Veronica", "grupo": "Municipal", "linea": "105", "proveedor": "Cordoba", "monto": 700000.0, "localidad": "Cruz Del Eje", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-27", "vendedor": "Belén Toledo", "dni": "13539743", "nombre": "Olivera, Manuel Pedro", "grupo": "Empleado Publico", "linea": "141", "proveedor": "Cordoba", "monto": 500000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-28", "vendedor": "Belén Toledo", "dni": "35577446", "nombre": "Salvatelli Barrera, Mario Emanuel", "grupo": "Empleado Publico", "linea": "130", "proveedor": "Cordoba", "monto": 550000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-29", "vendedor": "Belén Toledo", "dni": "41965620", "nombre": "Cabrera Florencia Agustina", "grupo": "Empleado Publico", "linea": "Alboreo Con Sit", "proveedor": "Cordoba", "monto": 1000000.0, "localidad": "Cordoba", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-04", "vendedor": "Belén Toledo", "dni": "38796110", "nombre": "Paz, Juan Freddy", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 620000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-04", "vendedor": "Alex Luna", "dni": "27174418", "nombre": "Villafañe Cristian Alberto", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1020000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-04", "vendedor": "Alex Luna", "dni": "13388748", "nombre": "Baez Luis Horacio", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 170000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-04", "vendedor": "Darío Díaz", "dni": "10653719", "nombre": "Farfaglia Julia Itati", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 150000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Darío Díaz", "dni": "13795197", "nombre": "Miguel Isabel Patricia", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 230000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Darío Díaz", "dni": "5298448", "nombre": "Etchecopar Dora Rita", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1500000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Belén Toledo", "dni": "11117536", "nombre": "Avila Antonio Tomas", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 600000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Alex Luna", "dni": "23159320", "nombre": "Valero Juan Marcelo", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 2330000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Alex Luna", "dni": "17650721", "nombre": "Farias Stella Maris", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 130000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-05", "vendedor": "Alex Luna", "dni": "5959421", "nombre": "Olea Margarita Del Transito", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 880000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Darío Díaz", "dni": "10757779", "nombre": "Varela Susana Amelia", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 700000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Darío Díaz", "dni": "5704423", "nombre": "Barrias Antonia Beatriz", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1800000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Darío Díaz", "dni": "13153149", "nombre": "Patoco Hector Ramon", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1500000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Belén Toledo", "dni": "10458229", "nombre": "Gimenez, Maria Del Lujan", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 100000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Belén Toledo", "dni": "4827789", "nombre": "Arias Maria Isabel", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 670000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-07", "vendedor": "Belén Toledo", "dni": "13514866", "nombre": "Moya Jorge Omar", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 100000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-08", "vendedor": "Darío Díaz", "dni": "4959600", "nombre": "Barrias Monica", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 2000000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-08", "vendedor": "Alex Luna", "dni": "10732982", "nombre": "Fernandez Maria Lujan", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 100000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-08", "vendedor": "Belén Toledo", "dni": "17556760", "nombre": "Paez, Avelina Rosa", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 180000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Alex Luna", "dni": "4603666", "nombre": "Maggi Alicia Del Carmen", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 870000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Alex Luna", "dni": "11915164", "nombre": "Ruiz Rolando Roberto", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 2730000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Alex Luna", "dni": "11764151", "nombre": "Luque Noemi Rosa", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 780000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Belén Toledo", "dni": "14702070", "nombre": "Lopez, Sergio Omar", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 100000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Belén Toledo", "dni": "13579337", "nombre": "Luquez, Rodolfo", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 150000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Belén Toledo", "dni": "12862538", "nombre": "Ramirez, Jose Onel", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 110000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-11", "vendedor": "Alex Luna", "dni": "6055165", "nombre": "Ruiz Mirta Raquel", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 710000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-12", "vendedor": "Darío Díaz", "dni": "21829542", "nombre": "Dearmas Fabio German", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 870000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-12", "vendedor": "Belén Toledo", "dni": "11950137", "nombre": "Ahibe, Angelica Ester", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 650000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-12", "vendedor": "Belén Toledo", "dni": "11994817", "nombre": "Paz, Alicia Petrona", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 450000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-13", "vendedor": "Belén Toledo", "dni": "14734200", "nombre": "Herrera, Alicia Monica", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 780000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-13", "vendedor": "Alex Luna", "dni": "14607858", "nombre": "Moreno Maria Antonia", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 730000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-14", "vendedor": "Alex Luna", "dni": "7955467", "nombre": "Vergara Ante Noe", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1000000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Alex Luna", "dni": "30240419", "nombre": "Vazquez Roxana Isabel Paola", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 130000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Alex Luna", "dni": "4948526", "nombre": "Procoppo Adelina M Adelina Maria", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 1100000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-15", "vendedor": "Alex Luna", "dni": "18472307", "nombre": "Soler Maria Alejandra", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 130000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}, {"fecha": "2026-05-16", "vendedor": "Alex Luna", "dni": "11910445", "nombre": "Colombo Deidamia Teresa", "grupo": "Jubilado Nacional", "linea": "Red Mutual-PAI", "proveedor": "Sin dato", "monto": 740000.0, "localidad": "Sin dato", "provincia": "No disponible", "estado": "No disponible"}];
+const SOURCE_SUMMARY = {"operations": 77, "total_amount": 76468409.0, "average_ticket": 993096.2207792208, "unique_clients": 77, "daily_average_amount": 3475836.772727273, "date_min": "2026-05-04", "date_max": "2026-06-11", "best_vendor": "Alex Luna", "best_vendor_amount": 33722027.0, "top_line": "Red Mutual-PAI", "top_provider": "Cordoba", "top_group": "Empleado Publico", "top_day_ops": "2026-05-11", "top_day_amount": "2026-05-11", "quality": {"rows": 77, "missing": {"fecha": 0, "vendedor": 0, "dni": 0, "nombre": 0, "grupo": 0, "linea": 0, "proveedor": 36, "monto": 0, "localidad": 37}, "duplicate_rows": 0, "negative_or_zero_amounts": 0, "invalid_dates": 0, "future_dates_after_current_context": 1, "dates_after_may_2026": 1, "excluded_operations": {"seller": "Carina", "rows": 1, "reason": "Operaciones retiradas por indicacion del usuario: carga incompleta."}}, "workbook_profile": {"sheets": ["DATOS", "Hoja1"], "notes": ["Hoja1 contiene registros desplazados que ya estan incluidos en DATOS; se omitio para no duplicar operaciones."], "hoja1_rows_detected": 37, "hoja1_dni_overlap_with_datos": 37, "datos_meta": {"sheet": "DATOS", "header_row_excel": 2, "rows_after_header": 78, "raw_columns": ["FECHA", "VENDEDOR", "DNI", "NOMBRE Y APELLIDO", "GRUPO DE AFINIDAD", "LINEA", "BANCO", "MONTO", "LOCALIDAD"]}}};
+
+const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+const number = new Intl.NumberFormat('es-AR');
+const COMMISSION_RULES = [
+  { seller: 'Alex Luna', objective: 5000000, rate: 0.03 },
+  { seller: 'Belén Toledo', objective: 5000000, rate: 0.03 },
+  { seller: 'Darío Díaz', objective: 5000000, rate: 0.03 },
+  { seller: 'Valentina Chanquia', objective: 7000000, rate: 0.03 },
+];
+
+const els = {
+  dateFrom: document.getElementById('dateFrom'),
+  dateTo: document.getElementById('dateTo'),
+  seller: document.getElementById('sellerFilter'),
+  line: document.getElementById('lineFilter'),
+  provider: document.getElementById('providerFilter'),
+  group: document.getElementById('groupFilter'),
+  locality: document.getElementById('localityFilter'),
+  clear: document.getElementById('clearFilters'),
+};
+
+function byDate(a, b) { return a.fecha.localeCompare(b.fecha); }
+function sum(rows, key='monto') { return rows.reduce((acc, row) => acc + (Number(row[key]) || 0), 0); }
+function unique(rows, key) { return [...new Set(rows.map(row => row[key]).filter(Boolean))]; }
+function share(value, total) { return total ? value / total : 0; }
+function fmtPct(value) { return `${(value * 100).toFixed(1).replace('.', ',')}%`; }
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
+function parseLocalDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  return parseLocalDate(iso).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+function groupBy(rows, key) {
+  const map = new Map();
+  for (const row of rows) {
+    const label = row[key] || 'Sin dato';
+    if (!map.has(label)) map.set(label, { label, ops: 0, monto: 0 });
+    const item = map.get(label);
+    item.ops += 1;
+    item.monto += Number(row.monto) || 0;
+  }
+  return [...map.values()].sort((a, b) => b.monto - a.monto || b.ops - a.ops || a.label.localeCompare(b.label));
+}
+function groupDaily(rows) {
+  const map = new Map();
+  for (const row of rows) {
+    if (!map.has(row.fecha)) map.set(row.fecha, { fecha: row.fecha, ops: 0, monto: 0 });
+    const item = map.get(row.fecha);
+    item.ops += 1;
+    item.monto += Number(row.monto) || 0;
+  }
+  return [...map.values()].sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
+function statusForSeller(value, avg) {
+  if (!avg || value >= avg) return 'good';
+  if (value >= avg * 0.7) return 'warn';
+  return 'bad';
+}
+function statusForVolume(rows) {
+  if (rows.length >= 50) return 'good';
+  if (rows.length >= 20) return 'warn';
+  return 'bad';
+}
+function statusForTicket(ticket, globalTicket) {
+  if (!globalTicket || ticket >= globalTicket * 0.95) return 'good';
+  if (ticket >= globalTicket * 0.75) return 'warn';
+  return 'bad';
+}
+function statusForConcentration(value) {
+  if (value >= 0.5) return 'bad';
+  if (value >= 0.35) return 'warn';
+  return 'good';
+}
+function normalizeText(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .trim();
+}
+function isCoopLaPlata(row) {
+  const values = [row.linea, row.proveedor].map(normalizeText);
+  return values.some(value => {
+    if (!value) return false;
+    const mentionsCoop = value.includes('COOP') || value.includes('COOPERATIVA');
+    const mentionsPlata = value.includes('PLATA');
+    return (mentionsCoop && mentionsPlata) || value === 'COOPERATIVA';
+  });
+}
+function commissionStatus(fulfillment) {
+  if (fulfillment >= 1) return 'good';
+  if (fulfillment >= 0.8) return 'warn';
+  return 'bad';
+}
+function commissionStateLabel(status, generated) {
+  if (status === 'good' && generated > 0) return 'Cumplido';
+  if (status === 'good') return 'Objetivo alcanzado';
+  if (status === 'warn') return 'En seguimiento';
+  return 'Bajo objetivo';
+}
+function calculateCommissions(rows) {
+  return COMMISSION_RULES.map(rule => {
+    const sellerRows = rows.filter(row => normalizeText(row.vendedor) === normalizeText(rule.seller));
+    const totalSales = sum(sellerRows);
+    const coopSales = sum(sellerRows.filter(isCoopLaPlata));
+    const commissionableSales = Math.max(0, totalSales - coopSales);
+    const fulfillment = rule.objective ? commissionableSales / rule.objective : 0;
+    const generated = commissionableSales > rule.objective ? commissionableSales * rule.rate : 0;
+    const status = commissionStatus(fulfillment);
+    return {
+      label: rule.seller,
+      seller: rule.seller,
+      ops: sellerRows.length,
+      totalSales,
+      coopSales,
+      monto: commissionableSales,
+      commissionableSales,
+      objective: rule.objective,
+      remaining: Math.max(rule.objective - commissionableSales, 0),
+      fulfillment,
+      rate: rule.rate,
+      generated,
+      status,
+      state: commissionStateLabel(status, generated),
+    };
+  }).sort((a, b) => b.commissionableSales - a.commissionableSales || b.generated - a.generated || a.seller.localeCompare(b.seller));
+}
+function optionList(id, values) {
+  const el = els[id];
+  const selected = el.value;
+  el.innerHTML = `<option value="">Todos</option>` + values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+  if (values.includes(selected)) el.value = selected;
+}
+function initFilters() {
+  const dates = unique(DATA, 'fecha').sort();
+  els.dateFrom.value = dates[0] || '';
+  els.dateTo.value = dates[dates.length - 1] || '';
+  optionList('seller', unique(DATA, 'vendedor').sort((a,b) => a.localeCompare(b)));
+  optionList('line', unique(DATA, 'linea').sort((a,b) => a.localeCompare(b)));
+  optionList('provider', unique(DATA, 'proveedor').sort((a,b) => a.localeCompare(b)));
+  optionList('group', unique(DATA, 'grupo').sort((a,b) => a.localeCompare(b)));
+  optionList('locality', unique(DATA, 'localidad').sort((a,b) => a.localeCompare(b)));
+  document.getElementById('periodPill').textContent = `${fmtDate(dates[0])} a ${fmtDate(dates[dates.length - 1])}`;
+}
+function filteredRows() {
+  return DATA.filter(row => {
+    if (els.dateFrom.value && row.fecha < els.dateFrom.value) return false;
+    if (els.dateTo.value && row.fecha > els.dateTo.value) return false;
+    if (els.seller.value && row.vendedor !== els.seller.value) return false;
+    if (els.line.value && row.linea !== els.line.value) return false;
+    if (els.provider.value && row.proveedor !== els.provider.value) return false;
+    if (els.group.value && row.grupo !== els.group.value) return false;
+    if (els.locality.value && row.localidad !== els.locality.value) return false;
+    return true;
+  }).sort(byDate);
+}
+
+function renderQuality(rows) {
+  const q = SOURCE_SUMMARY.quality;
+  const exclusionNotice = q.excluded_operations && q.excluded_operations.rows
+    ? [{
+      level: 'warn',
+      text: `${q.excluded_operations.rows} operacion(es) de ${q.excluded_operations.seller} excluida(s) por carga incompleta.`
+    }]
+    : [];
+  const notices = [
+    ...exclusionNotice,
+    {
+      level: q.duplicate_rows ? 'warn' : 'good',
+      text: q.duplicate_rows ? `${q.duplicate_rows} posibles duplicados exactos detectados.` : 'No se detectaron duplicados exactos.'
+    },
+    {
+      level: q.missing.monto || q.negative_or_zero_amounts ? 'bad' : 'good',
+      text: q.missing.monto || q.negative_or_zero_amounts ? 'Hay montos faltantes, nulos o no positivos.' : 'Montos completos y positivos.'
+    },
+    {
+      level: q.dates_after_may_2026 ? 'warn' : 'good',
+      text: q.dates_after_may_2026 ? `${q.dates_after_may_2026} operaciones tienen fecha posterior al 31/05/2026.` : 'Todas las fechas caen dentro de mayo 2026.'
+    },
+    {
+      level: 'warn',
+      text: 'Estado y provincia no existen como campos separados; tasa de aprobacion y mapa provincial quedan no disponibles.'
+    }
+  ];
+  document.getElementById('qualityStrip').innerHTML = notices.map(n => `<div class="notice ${n.level}">${escapeHtml(n.text)}</div>`).join('');
+}
+
+function renderKpis(rows) {
+  const total = sum(rows);
+  const globalTicket = sum(DATA) / DATA.length;
+  const ticket = rows.length ? total / rows.length : 0;
+  const uniqueClients = new Set(rows.map(r => r.dni).filter(Boolean)).size;
+  const days = unique(rows, 'fecha').length;
+  const dailyAvg = days ? total / days : 0;
+  const lineTop = groupBy(rows, 'linea')[0];
+  const providerTop = groupBy(rows, 'proveedor')[0];
+  const lineConcentration = lineTop ? share(lineTop.monto, total) : 0;
+  const providerConcentration = providerTop ? share(providerTop.monto, total) : 0;
+  const kpis = [
+    {
+      label: 'Operaciones',
+      value: number.format(rows.length),
+      hint: `${uniqueClients} socios unicos`,
+      status: statusForVolume(rows),
+      tip: 'Cantidad total de operaciones filtradas. Si baja, puede indicar menor originacion, menor carga o filtros demasiado restrictivos.'
+    },
+    {
+      label: 'Monto colocado',
+      value: money.format(total),
+      hint: `${days} dias con actividad`,
+      status: total ? 'good' : 'bad',
+      tip: 'Suma de la columna MONTO. Si sube, crece la colocacion; si baja, revisar volumen, ticket y canales.'
+    },
+    {
+      label: 'Ticket promedio',
+      value: money.format(ticket),
+      hint: `Base global: ${money.format(globalTicket)}`,
+      status: statusForTicket(ticket, globalTicket),
+      tip: 'Monto colocado dividido por operaciones. Si sube con volumen estable, mejora el valor promedio; si baja, puede haber mayor peso de operaciones chicas.'
+    },
+    {
+      label: 'Promedio diario',
+      value: money.format(dailyAvg),
+      hint: 'Monto por dia activo',
+      status: days >= 8 ? 'good' : 'warn',
+      tip: 'Monto colocado dividido por dias con ventas. Si cae, revisar dias sin produccion o baja intensidad comercial.'
+    },
+    {
+      label: 'Concentracion',
+      value: fmtPct(Math.max(lineConcentration, providerConcentration)),
+      hint: `${lineTop?.label || 'Sin linea'} / ${providerTop?.label || 'Sin proveedor'}`,
+      status: statusForConcentration(Math.max(lineConcentration, providerConcentration)),
+      tip: 'Mayor participacion entre linea y proveedor lider. Verde indica cartera mas diversificada; rojo indica dependencia alta.'
+    }
+  ];
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+    <article class="kpi ${k.status}">
+      <div class="label-row">
+        <div class="label">${escapeHtml(k.label)}</div>
+        <span class="info" tabindex="0" data-tip="${escapeHtml(k.tip)}">i</span>
+      </div>
+      <div class="value">${escapeHtml(k.value)}</div>
+      <div class="hint">${escapeHtml(k.hint)}</div>
+    </article>
+  `).join('');
+}
+
+function renderBarChart(containerId, items, opts={}) {
+  const container = document.getElementById(containerId);
+  const data = items.slice(0, opts.limit || 8);
+  if (!data.length) { container.innerHTML = '<p class="panel-note">Sin datos para los filtros seleccionados.</p>'; return; }
+  const width = 760;
+  const rowH = 34;
+  const height = 42 + data.length * rowH;
+  const max = Math.max(...data.map(d => d.monto), 1);
+  const total = data.reduce((acc, d) => acc + d.monto, 0);
+  const colors = ['#1f6f78', '#2f80ed', '#0f766e', '#7c6f2f', '#b7791f', '#8a4baf', '#4f6f52', '#b85c38'];
+  let rows = data.map((d, i) => {
+    const y = 32 + i * rowH;
+    const barW = Math.max(2, (d.monto / max) * 360);
+    const concentration = total ? d.monto / total : 0;
+    const color = concentration >= 0.5 ? '#b91c1c' : concentration >= 0.35 ? '#b7791f' : colors[i % colors.length];
+    const label = d.label.length > 25 ? d.label.slice(0, 24) + '…' : d.label;
+    return `
+      <text x="0" y="${y + 14}" font-size="14" fill="#334155">${escapeHtml(label)}</text>
+      <rect x="190" y="${y}" width="${barW}" height="18" rx="4" fill="${color}"></rect>
+      <text x="${200 + barW}" y="${y + 14}" font-size="13" fill="#334155">${money.format(d.monto)} · ${d.ops} ops</text>
+    `;
+  }).join('');
+  container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(opts.label || 'Grafico de barras')}" preserveAspectRatio="xMinYMin meet">
+    <line x1="190" y1="20" x2="190" y2="${height - 8}" stroke="#d9e1e8"></line>
+    ${rows}
+  </svg>`;
+}
+
+function renderDailyChart(rows) {
+  const container = document.getElementById('dailyChart');
+  const data = groupDaily(rows);
+  if (!data.length) { container.innerHTML = '<p class="panel-note">Sin datos para los filtros seleccionados.</p>'; return; }
+  const width = 940;
+  const height = 320;
+  const pad = { l: 64, r: 24, t: 22, b: 56 };
+  const max = Math.max(...data.map(d => d.monto), 1);
+  const minX = 0;
+  const maxX = Math.max(data.length - 1, 1);
+  const x = i => pad.l + ((i - minX) / maxX) * (width - pad.l - pad.r);
+  const y = v => height - pad.b - (v / max) * (height - pad.t - pad.b);
+  const path = data.map((d, i) => `${i === 0 ? 'M' : 'L'} ${x(i).toFixed(1)} ${y(d.monto).toFixed(1)}`).join(' ');
+  let prev = null;
+  const points = data.map((d, i) => {
+    let status = 'good';
+    if (prev && prev.monto > 0) {
+      const drop = (prev.monto - d.monto) / prev.monto;
+      if (drop >= 0.5) status = 'bad';
+      else if (drop >= 0.3) status = 'warn';
+    }
+    prev = d;
+    const color = status === 'bad' ? '#b91c1c' : status === 'warn' ? '#b7791f' : '#1f6f78';
+    return `<circle cx="${x(i)}" cy="${y(d.monto)}" r="5" fill="${color}"><title>${fmtDate(d.fecha)} · ${money.format(d.monto)} · ${d.ops} ops</title></circle>`;
+  }).join('');
+  const labels = data.map((d, i) => {
+    if (data.length > 10 && i % Math.ceil(data.length / 8) !== 0 && i !== data.length - 1) return '';
+    return `<text x="${x(i)}" y="${height - 24}" font-size="13" text-anchor="middle" fill="#627083">${fmtDate(d.fecha).slice(0,5)}</text>`;
+  }).join('');
+  const yTicks = [0, 0.5, 1].map(t => {
+    const val = max * t;
+    const yy = y(val);
+    return `<line x1="${pad.l}" y1="${yy}" x2="${width - pad.r}" y2="${yy}" stroke="#e4eaf0"></line><text x="${pad.l - 8}" y="${yy + 4}" text-anchor="end" font-size="13" fill="#627083">${money.format(val).replace(',00','')}</text>`;
+  }).join('');
+  const bars = data.map((d, i) => {
+    const bw = Math.max(8, (width - pad.l - pad.r) / Math.max(data.length, 1) * 0.42);
+    const barH = (d.ops / Math.max(...data.map(x => x.ops), 1)) * 60;
+    return `<rect x="${x(i) - bw / 2}" y="${height - pad.b - barH}" width="${bw}" height="${barH}" rx="3" fill="#c9d8e6"><title>${d.ops} operaciones</title></rect>`;
+  }).join('');
+  container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="Evolucion diaria" preserveAspectRatio="xMidYMid meet">
+    ${yTicks}
+    ${bars}
+    <path d="${path}" fill="none" stroke="#1f6f78" stroke-width="3"></path>
+    ${points}
+    ${labels}
+    <text x="${pad.l}" y="14" font-size="14" fill="#627083">Linea: monto · Barras: operaciones</text>
+  </svg>`;
+}
+
+function renderSellerRanking(rows) {
+  const items = groupBy(rows, 'vendedor');
+  const container = document.getElementById('sellerRanking');
+  if (!items.length) { container.innerHTML = '<p class="panel-note">Sin datos para los filtros seleccionados.</p>'; return; }
+  const avg = items.reduce((acc, d) => acc + d.monto, 0) / items.length;
+  const max = Math.max(...items.map(d => d.monto), 1);
+  container.innerHTML = `<div class="rank-list">` + items.map((d, i) => {
+    const status = statusForSeller(d.monto, avg);
+    const shareText = fmtPct(share(d.monto, sum(rows)));
+    return `<div class="rank-item">
+      <strong><span class="status-dot ${status}"></span>${i + 1}. ${escapeHtml(d.label)}</strong>
+      <span>${money.format(d.monto)} · ${d.ops} ops · ${shareText}</span>
+      <div class="bar-track"><div class="bar-fill ${status}" style="width:${Math.max(3, d.monto / max * 100)}%"></div></div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function renderLocalityTable(rows) {
+  const items = groupBy(rows, 'localidad').slice(0, 12);
+  const total = sum(rows);
+  const body = items.map(d => `<tr><td>${escapeHtml(d.label)}</td><td class="amount">${number.format(d.ops)}</td><td class="amount">${money.format(d.monto)}</td><td class="amount">${fmtPct(share(d.monto, total))}</td></tr>`).join('');
+  document.getElementById('localityTable').innerHTML = `<table><thead><tr><th>Localidad</th><th class="amount">Ops</th><th class="amount">Monto</th><th class="amount">Part.</th></tr></thead><tbody>${body || '<tr><td colspan="4">Sin datos</td></tr>'}</tbody></table>`;
+}
+
+function renderInsights(rows) {
+  const total = sum(rows);
+  const sellers = groupBy(rows, 'vendedor');
+  const lines = groupBy(rows, 'linea');
+  const providers = groupBy(rows, 'proveedor');
+  const groups = groupBy(rows, 'grupo');
+  const days = groupDaily(rows);
+  const topDayOps = [...days].sort((a, b) => b.ops - a.ops || b.monto - a.monto)[0];
+  const topDayAmount = [...days].sort((a, b) => b.monto - a.monto || b.ops - a.ops)[0];
+  const avgSeller = sellers.length ? sellers.reduce((acc, d) => acc + d.monto, 0) / sellers.length : 0;
+  const lowSellers = sellers.filter(s => s.monto < avgSeller * 0.7).map(s => s.label);
+  const lineShare = lines[0] ? share(lines[0].monto, total) : 0;
+  const providerShare = providers[0] ? share(providers[0].monto, total) : 0;
+  const cards = [
+    ['Mejor vendedor', sellers[0] ? `${sellers[0].label} lidera con ${money.format(sellers[0].monto)} en ${sellers[0].ops} operaciones.` : 'Sin datos para calcular ranking.'],
+    ['Linea mas utilizada', lines[0] ? `${lines[0].label} concentra ${lines[0].ops} operaciones y ${fmtPct(lineShare)} del monto filtrado.` : 'Sin linea disponible.'],
+    ['Proveedor lider', providers[0] ? `${providers[0].label} aporta ${money.format(providers[0].monto)} (${fmtPct(providerShare)}).` : 'Sin proveedor disponible.'],
+    ['Dia con mas operaciones', topDayOps ? `${fmtDate(topDayOps.fecha)} registro ${topDayOps.ops} operaciones por ${money.format(topDayOps.monto)}.` : 'Sin actividad diaria.'],
+    ['Dia con mayor monto', topDayAmount ? `${fmtDate(topDayAmount.fecha)} fue el pico de colocacion con ${money.format(topDayAmount.monto)}.` : 'Sin actividad diaria.'],
+    ['Grupo relevante', groups[0] ? `${groups[0].label} explica ${money.format(groups[0].monto)} y ${groups[0].ops} operaciones.` : 'Sin grupo disponible.'],
+    ['Alertas', lowSellers.length ? `Baja produccion relativa en: ${lowSellers.join(', ')}.` : 'No hay vendedores por debajo del 70% del promedio filtrado.'],
+    ['Recomendacion', lineShare >= 0.5 || providerShare >= 0.5 ? 'Reducir dependencia: activar ofertas en lineas/proveedores alternativos y derivar leads segun elegibilidad.' : 'Mantener ritmo y reforzar seguimiento en dias con caidas frente al pico diario.'],
+    ['Dato faltante', 'Agregar Estado y Provincia permitiria calcular tasa de aprobacion, embudo y mapa territorial real.']
+  ];
+  document.getElementById('insights').innerHTML = cards.map(([title, text]) => `<div class="insight"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(text)}</p></div>`).join('');
+}
+
+function renderCommissionModule(rows) {
+  const commissions = calculateCommissions(rows);
+  const totalCommission = commissions.reduce((acc, row) => acc + row.generated, 0);
+  const totalCommissionable = commissions.reduce((acc, row) => acc + row.commissionableSales, 0);
+  const totalCoopExcluded = commissions.reduce((acc, row) => acc + row.coopSales, 0);
+  const achieved = commissions.filter(row => row.status === 'good').length;
+
+  const cards = [
+    {
+      label: 'Comision total a pagar',
+      value: money.format(totalCommission),
+      note: '3% sobre colocacion comisionable si supera objetivo'
+    },
+    {
+      label: 'Colocacion comisionable',
+      value: money.format(totalCommissionable),
+      note: 'Solo vendedores habilitados y sin Cooperativa La Plata'
+    },
+    {
+      label: 'Ventas excluidas',
+      value: money.format(totalCoopExcluded),
+      note: 'Cooperativa La Plata: suma comercial, no comision'
+    },
+    {
+      label: 'Objetivos cumplidos',
+      value: `${achieved} / ${commissions.length}`,
+      note: 'Vendedores comisionables con cumplimiento verde'
+    }
+  ];
+  document.getElementById('commissionSummary').innerHTML = cards.map(card => `
+    <div class="commission-card">
+      <div class="small">${escapeHtml(card.label)}</div>
+      <div class="big">${escapeHtml(card.value)}</div>
+      <div class="note">${escapeHtml(card.note)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('commissionProgress').innerHTML = commissions.map(row => {
+    const progress = Math.min(row.fulfillment, 1.25) / 1.25 * 100;
+    return `<div class="progress-item">
+      <div class="progress-head">
+        <span><span class="status-dot ${row.status}"></span>${escapeHtml(row.seller)}</span>
+        <span>${fmtPct(row.fulfillment)}</span>
+      </div>
+      <div class="progress-meta">Comisionable: ${money.format(row.commissionableSales)} · Objetivo: ${money.format(row.objective)} · Falta: ${money.format(row.remaining)}</div>
+      <div class="progress-track"><div class="progress-fill ${row.status}" style="width:${Math.max(2, progress)}%"></div></div>
+    </div>`;
+  }).join('');
+
+  renderBarChart(
+    'commissionableRanking',
+    commissions.map(row => ({ label: row.seller, ops: row.ops, monto: row.commissionableSales })),
+    { label: 'Ranking de colocacion comisionable', limit: 4 }
+  );
+  renderBarChart(
+    'commissionRanking',
+    commissions.map(row => ({ label: row.seller, ops: row.ops, monto: row.generated })),
+    { label: 'Ranking de comisiones generadas', limit: 4 }
+  );
+
+  const body = commissions.map(row => `<tr>
+    <td><span class="status-dot ${row.status}"></span>${escapeHtml(row.seller)}</td>
+    <td class="amount">${money.format(row.totalSales)}</td>
+    <td class="amount">${money.format(row.coopSales)}</td>
+    <td class="amount">${money.format(row.commissionableSales)}</td>
+    <td class="amount">${money.format(row.objective)}</td>
+    <td class="amount">${fmtPct(row.fulfillment)}</td>
+    <td class="amount">${fmtPct(row.rate)}</td>
+    <td class="amount">${money.format(row.generated)}</td>
+    <td>${escapeHtml(row.state)}</td>
+  </tr>`).join('');
+  document.getElementById('commissionTable').innerHTML = `<table>
+    <thead><tr><th>Vendedor</th><th class="amount">Ventas Totales</th><th class="amount">Ventas Cooperativa La Plata</th><th class="amount">Ventas Comisionables</th><th class="amount">Objetivo</th><th class="amount">Cumplimiento %</th><th class="amount">Comision %</th><th class="amount">Comision Generada</th><th>Estado</th></tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+function renderDetailTable(rows) {
+  const body = rows.slice(0, 300).map(r => `<tr>
+    <td>${fmtDate(r.fecha)}</td>
+    <td>${escapeHtml(r.vendedor)}</td>
+    <td>${escapeHtml(r.dni)}</td>
+    <td>${escapeHtml(r.nombre)}</td>
+    <td>${escapeHtml(r.grupo)}</td>
+    <td>${escapeHtml(r.linea)}</td>
+    <td>${escapeHtml(r.proveedor)}</td>
+    <td>${escapeHtml(r.localidad)}</td>
+    <td class="amount">${money.format(r.monto || 0)}</td>
+  </tr>`).join('');
+  const extra = rows.length > 300 ? `<p class="panel-note">Mostrando 300 de ${rows.length} filas filtradas.</p>` : '';
+  document.getElementById('detailTable').innerHTML = `<table>
+    <thead><tr><th>Fecha</th><th>Vendedor</th><th>DNI</th><th>Nombre</th><th>Grupo</th><th>Linea</th><th>Proveedor</th><th>Localidad</th><th class="amount">Monto</th></tr></thead>
+    <tbody>${body || '<tr><td colspan="9">Sin datos para los filtros seleccionados.</td></tr>'}</tbody>
+  </table>${extra}`;
+}
+
+function update() {
+  const rows = filteredRows();
+  renderQuality(rows);
+  renderKpis(rows);
+  renderDailyChart(rows);
+  renderSellerRanking(rows);
+  renderBarChart('lineChart', groupBy(rows, 'linea'), { label: 'Ventas por linea', limit: 8 });
+  renderBarChart('providerChart', groupBy(rows, 'proveedor'), { label: 'Ventas por proveedor', limit: 8 });
+  renderBarChart('groupChart', groupBy(rows, 'grupo'), { label: 'Ventas por grupo de afinidad', limit: 8 });
+  renderLocalityTable(rows);
+  renderInsights(rows);
+  renderCommissionModule(rows);
+  renderDetailTable(rows);
+}
+
+initFilters();
+Object.values(els).forEach(el => {
+  if (el && el !== els.clear) el.addEventListener('change', update);
+});
+els.clear.addEventListener('click', () => {
+  const dates = unique(DATA, 'fecha').sort();
+  els.dateFrom.value = dates[0] || '';
+  els.dateTo.value = dates[dates.length - 1] || '';
+  ['seller','line','provider','group','locality'].forEach(id => els[id].value = '');
+  update();
+});
+update();
+</script>
+</body>
+</html>
